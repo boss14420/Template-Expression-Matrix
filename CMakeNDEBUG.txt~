@@ -1,0 +1,16 @@
+cmake_minimum_required (VERSION 2.6)
+PROJECT (MATRIX)
+
+INCLUDE_DIRECTORIES("${MATRIX}/src/classes")
+
+#FIND_LIBRARY(MATH m)
+#FIND_LIBRARY(PTHREAD pthread)
+
+SET(CMAKE_CXX_FLAGS "-g -O0 -fforce-addr -march=native -Wall -std=gnu++0x")
+
+ADD_EXECUTABLE(mattest
+    src/test/mattest.cpp
+  )
+
+#TARGET_LINK_LIBRARIES(test_strassen_matrix ${MATH} ${PTHREAD})
+#TARGET_LINK_LIBRARIES(test2 ${MATH} ${PTHREAD})

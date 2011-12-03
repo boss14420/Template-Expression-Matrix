@@ -1,0 +1,1 @@
+/usr/lib/colorgcc/bin/c++   -O2 -Wall -std=gnu++0x -fomit-frame-pointer -ftree-vectorize -march=native -DNDEBUG -DNDEBUG_MT_EXPRESSION_TIME    CMakeFiles/matspeedtest.dir/src/test/matspeedtest.cpp.o  -o matspeedtest -rdynamic 

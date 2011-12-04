@@ -9,7 +9,7 @@ INCLUDE_DIRECTORIES("${MATRIX}/src/trivial")
 
 #SET(CMAKE_CXX_FLAGS "-O3 -Wall -std=gnu++0x --param max-inline-recursive-depth-auto=32 --param max-inline-recursive-depth=32 -ftree-vectorize -msse2 -DNDEBUG_MT_PRODUCT_TIME -DNDEBUG")
 #SET(CMAKE_CXX_FLAGS "-g -Wall -std=gnu++0x -DNDEBUG_MT_PRODUCT_TIME")
-SET(CMAKE_CXX_FLAGS "-O2 -Wall -std=gnu++0x -fomit-frame-pointer -ftree-vectorize -march=native -DNDEBUG -DNDEBUG_MT_EXPRESSION_TIME")
+SET(CMAKE_CXX_FLAGS "-O2 -Wall -std=gnu++0x -finline-functions -ftree-vectorize -march=native -DNDEBUG -DNDEBUG_MT_PRODUCT_TIME")
 
 ADD_EXECUTABLE(mattest
     src/test/mattest.cpp

@@ -1,1 +1,0 @@
-/usr/lib/colorgcc/bin/c++   -O2 -Wall -std=gnu++0x -ftree-vectorize -msse2 -DNDEBUG    CMakeFiles/mattest2.dir/src/test/mattest2.cpp.o  -o mattest2 -rdynamic 

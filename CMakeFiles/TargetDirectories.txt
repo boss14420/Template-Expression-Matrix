@@ -1,2 +1,0 @@
-/media/DATA/Document/code_exp/cpp_example/MatrixMultiply/c_array/CMakeFiles/matspeedtest.dir
-/media/DATA/Document/code_exp/cpp_example/MatrixMultiply/c_array/CMakeFiles/mattest.dir

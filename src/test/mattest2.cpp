@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  BOSS14420 (boss14420), boss14420@gmail.com
+ *         Author:  BOSS15520 (boss15520), boss15520@gmail.com
  *        Company:  
  *
  * =====================================================================================
@@ -22,94 +22,92 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include "../classes/matrix"
+#include "../trivial/matrix.hpp"
+#include <eigen3/Eigen/Dense>
 
-void test1(size_t n) {
-    int* raw1 = new int[n*n];
-    int* raw2 = new int[n*n];
+#ifndef __TEST_TYPE__
+#define __TEST_TYPE__ float
+#endif
 
-    std::srand(std::time(NULL));
-    for(size_t i = 0; i < n*n; ++i) {
-        raw1[i] = std::rand() % 100;
-        raw2[i] = std::rand() % 100;
-    }
-    
-    int* rawr = new int[n*n];
+int main(int argc, char *argv[]) {
+    using namespace boss14420;
+
+    size_t SIZE = 4096;
+
+    if(argc == 2)
+        SIZE = std::atoi(argv[1]);
+
+    std::cout << "SIZE = " << SIZE << std::endl;
 
     timeval begin, end;
-    gettimeofday(&begin, NULL);
+    double time;
 
-    int tmp;
-    size_t idx1, idx2;
-    for(size_t i=0; i<n; ++i) {
-        idx1 = i * n;
-        for(size_t j=0; j<n; ++j) {
-            idx2 = j * n;
-            tmp = 0;
-            for(size_t k=0; k<n; ++k) {
-                tmp += raw1[idx1+k] * raw2[idx2+k];
-            }
-            rawr[idx1+j] = tmp;
+    {
+        // Trivial Matrix
+        trivial::Matrix<__TEST_TYPE__> tm[5];
+
+        std::cout << "Generate random matrix ..." << std::endl;
+        for(int i = 0; i < 4; ++i) {
+            tm[i] = trivial::Matrix<__TEST_TYPE__>::Random(SIZE,SIZE,0,100);
         }
+
+        std::cout << "trivial matrix: " ;
+        std::cout.flush();
+        gettimeofday(&begin, NULL);
+        tm[4] = tm[0] + tm[1] + tm[2] + tm[3];
+        gettimeofday(&end, NULL);
+
+        time = end.tv_sec - begin.tv_sec + 
+            (end.tv_usec - begin.tv_usec) / 1000000.0;
+
+        std::cout << time << std::endl;
+
     }
 
-    gettimeofday(&end, NULL);
-    double time = end.tv_sec - begin.tv_sec + 
-        (end.tv_usec - begin.tv_usec) / 1000000.0;
+    {
+        // Template Expression
 
-    std::cout << "Test1, n = " << n << " : " << time << "s\n";
-
-    delete[] raw1;
-    delete[] raw2;
-    delete[] rawr;
-
-}
-
-void test2(size_t n) {
-    
-    typedef int T1;
-    typedef int T2;
-
-    typedef int TMul;
-
-    std::vector<int> raw1(n*n), raw2(n*n), rawr(n*n);
-
-    std::srand(std::time(NULL));
-    for(size_t i = 0; i < n*n; ++i) {
-        raw1[i] = std::rand() % 100;
-        raw2[i] = std::rand() % 100;
-    }
-    
-    timeval begin, end;
-    gettimeofday(&begin, NULL);
-
-    TMul tmp;
-    size_t idx1, idx2;
-    for(size_t i=0; i<n; ++i) {
-        idx1 = i * n;
-        for(size_t j=0; j<n; ++j) {
-            idx2 = j * n;
-            tmp = 0;
-            for(size_t k=0; k<n; ++k) {
-                tmp += raw1[idx1+k] * raw2[idx2+k];
-            }
-            rawr[idx1+j] = tmp;
+        matrix::Matrix<__TEST_TYPE__> mm[5];
+        std::cout << "Generate random matrix ..." << std::endl;
+        for(int i = 0; i < 4; ++i) {
+            mm[i] = matrix::Matrix<__TEST_TYPE__>::Random(SIZE,SIZE,0,100);
         }
+
+        std::cout << "template expression matrix: ";
+        std::cout.flush();
+        gettimeofday(&begin, NULL);
+        mm[4] = mm[0] + mm[1] + mm[2] + mm[3];
+        gettimeofday(&end, NULL);
+
+        time = end.tv_sec - begin.tv_sec + 
+            (end.tv_usec - begin.tv_usec) / 1000000.0;
+
+        std::cout << time << std::endl;
     }
 
-    gettimeofday(&end, NULL);
-    double time = end.tv_sec - begin.tv_sec + 
-        (end.tv_usec - begin.tv_usec) / 1000000.0;
+    {
+        // Eigen Matrix
 
-    std::cout << "Test2, n = " << n << " : " << time << "s\n";
+        using Eigen::Dynamic;
+        Eigen::Matrix<__TEST_TYPE__,Dynamic, Dynamic> em[5];
 
-}
+        std::cout << "Generate random matrix ..." << std::endl;
+        for(int i = 0; i < 4; ++i) {
+            em[i] = Eigen::Matrix<__TEST_TYPE__,Dynamic,Dynamic>::Random(SIZE,SIZE);
+        }
 
-int main() {
-    test1(1024);
-    test2(1024);
+        std::cout << "eigen matrix: ";
+        std::cout.flush();
+        gettimeofday(&begin, NULL);
+        em[4] = em[0] + em[1] + em[2] + em[3];
+        gettimeofday(&end, NULL);
 
-    test1(2048);
-    test2(2048);
+        time = end.tv_sec - begin.tv_sec + 
+            (end.tv_usec - begin.tv_usec) / 1000000.0;
+
+        std::cout << time << std::endl;
+    }
 
     return 0;
 }

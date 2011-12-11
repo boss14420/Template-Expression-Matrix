@@ -24,6 +24,7 @@
 #endif
 
 #include <cassert>
+#include "macro.h"
  
 template <typename T, typename E>
 // A CRTP base class for Vecs with a size and indexing:
@@ -34,18 +35,18 @@ class VecExpression {
         typedef typename container_type::value_type  value_type;
         typedef typename container_type::reference   reference;
 
-        size_type size() const { return static_cast<E const&>(*this).size(); }
-        inline value_type operator[](size_type i) const { return static_cast<E const&>(*this)[i]; }
+        size_type size() const { return ((E const&)*this).size(); }
+        inline value_type operator[](size_type i) const { return ((E const&)*this)[i]; }
 
 #ifdef DEBUG
-        static std::string name() {
+        virtual std::string name() const {
             return std::string("VecExpression< ") + typeid(T).name() 
-                + ", " + E::name() + " >";
+                + ", " + ((E const&)*this).name() + " >";
         }
 #endif
 
-        operator E&() { return static_cast<E&>(*this); }
-        operator E const&() const { return static_cast<const E&>(*this); }
+        operator E&() { return reinterpret_cast<E&>(*this); }
+        operator E const&() const { return reinterpret_cast<E const&>(*this); }
 };
 
 // The actual Vec class:
@@ -60,7 +61,7 @@ public:
     typedef typename VecExpression<T, Vec<T> >::reference reference;
 
 #ifdef DEBUG
-    static std::string name() {
+    virtual std::string name() const {
         return std::string("Vec< ") + typeid(T).name() + " >";
     }
 #endif
@@ -81,7 +82,7 @@ public:
             }
 #ifdef DEBUG
             std::cout << "Call constructor Vec(VecExpression< " <<
-                typeid(T).name() << ", " << E::name() << " >)\n";
+                typeid(T).name() << ", " << v.name() << " >)\n";
 #endif
         }
 
@@ -116,17 +117,17 @@ public:
 
 #ifdef DEBUG
         std::cout << "Call constructor VecDifference(VecExpression< " << typeid(T).name() <<
-            ", " << E1::name() << " >, VecExpression< " << typeid(T).name() << ", " <<
-            E2::name() << " >)\n";
+            ", " << _u.name() << " >, VecExpression< " << typeid(T).name() << ", " <<
+            _v.name() << " >)\n";
 #endif
     }
     size_type size() const { return _v.size(); }
     inline value_type operator[](size_type i) const { return _u[i] - _v[i]; }
 
 #ifdef DEBUG
-    static std::string name() {
+    virtual std::string name()  const {
         return std::string("VecDifference< ") + typeid(T).name() +
-            ", " + E1::name() + ", " + E2::name() + " >";
+            ", " + _u.name() + ", " + _v.name() + " >";
     }
 #endif
 };
@@ -145,17 +146,17 @@ public:
 
 #ifdef DEBUG
         std::cout << "Call constructor VecAdd(VecExpression< " << typeid(T).name() <<
-            ", " << E1::name() << " >, VecExpression< " << typeid(T).name() << ", " <<
-            E2::name() << " >)\n";
+            ", " << _u.name() << " >, VecExpression< " << typeid(T).name() << ", " <<
+            _v.name() << " >)\n";
 #endif
     }
     size_type size() const { return _v.size(); }
     inline value_type operator[](size_type i) const { return _u[i] + _v[i]; }
 
 #ifdef DEBUG
-    static std::string name() {
+    virtual std::string name() const {
         return std::string("VecAdd< ") + typeid(T).name() +
-            ", " + E1::name() + ", " + E2::name() + " >";
+            ", " + _u.name() + ", " + _v.name() + " >";
     }
 #endif
 };
@@ -172,15 +173,15 @@ public:
     VecScaled(T alpha, VecExpression<T,E> const& v) : _alpha(alpha), _v(v) {
 #ifdef DEBUG
         std::cout << "Call constructor VecScaled(" << typeid(T).name() << 
-            ", VecExpression< " << E::name() << " >)\n";
+            ", VecExpression< " << _v.name() << " >)\n";
 #endif
     }
     size_type size() const { return _v.size(); }
     inline value_type operator[](size_type i) const { return _alpha * _v[i]; }
 
 #ifdef DEBUG
-    static std::string name() {
-        return std::string("VecScaled< ") + typeid(T).name() + ", " + E::name() + " >";
+    virtual std::string name() const {
+        return std::string("VecScaled< ") + typeid(T).name() + ", " + _v.name() + " >";
     }
 #endif
 };
